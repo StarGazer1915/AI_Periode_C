@@ -274,7 +274,7 @@ def spacekiller(textfile):
         result += h
     return f"-- Spacekiller has eliminated it's targets. --\nResult:\n'{result}'"
 
-#print(spacekiller("1a_Textfile"))
+#print(spacekiller("Formatieve Opdracht 1a (Textfile).txt"))
 
 
 # ---------------------------------------------- #
