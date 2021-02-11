@@ -110,7 +110,7 @@ def playgame_VersusAI(colors, length_code):
         else:
             if uitkomst[0] != generated_code and gamelength > 6:
                 print("\nHelaas! Je hebt al je beurten verspild. De computer heeft gewonnen!")
-                print(f"\nHet antwoord was: {uitkomst[0]}")
+                print(f"\nHet antwoord was: {generated_code}")
                 break
             # ---------- Shows result (Blackpin, Whitepin) ---------- #
             print(f"- Je hebt er {uitkomst[1]} op de juiste plaats.\n"
@@ -182,6 +182,42 @@ def generate_Possibilities(colorlist):
     return listpossible
 
 
+def playgame_VersusPlayer(colors):
+    """
+    This function runs the game where the player generates
+    the code and the computer needs to guess.
+    @param colors: list
+    @return: void
+    """
+    print(f"\nWelkom bij Mastermind!\n"
+          f"De computer zal jouw code raden door de voorletters te gebruiken van kleuren. (bijvoorbeeld: RGBZ)\n"
+          f"De code moet bestaan uit minimaal 4 kleuren die ieder: {colors} kunnen zijn.\n"
+          f"Let op: Je moet de kleuren als voorletters invoeren\n")
+
+    code = generate_PlayerCode(colors)
+    colorlist = []
+    for i in colors:
+        colorlist.append(i[0])
+
+    print(f"\n1. Simple Strategy (Shapiro, 1983)\n"
+          f"2. Worst Case Strategy (Knuth, 1976-1977)\n"
+          f"3. Eigen heuristiek (Justin Klein, 2021)")
+    while True:
+        algorithm = input("Kies een van de bovenstaande algoritmes: ")
+        if algorithm == "1":
+            useAlgorithm_SimpleStrategy(code,colorlist)
+            break
+        elif algorithm == "2":
+            useAlgorithm_WorstCase(code,colorlist)
+            break
+        elif algorithm == "3":
+            useAlgorithm_Heuristiek(code,colorlist)
+            break
+        else:
+            print("\nVerkeerde invoer, Kies 1,2 of 3 en probeer het opnieuw!\n")
+
+# --------------------------------------------------------------------------- #
+# ---------------------------- The 3 Algorithms ----------------------------- #
 def useAlgorithm_SimpleStrategy(code,colorlist):
     """
     This function tries to guess the code that the player
@@ -207,14 +243,14 @@ def useAlgorithm_SimpleStrategy(code,colorlist):
                 possiblesolutions.remove(i)
         loop += 1
 
-    print(f"\nHet kostte het Simple-Strategy algoritme {loop} gokken!\n")
+    print(f"\nHet kostte het Simple-Strategy algoritme {loop} gok(ken)!\n")
 
 
 def useAlgorithm_WorstCase(code,colorlist):
     """
     This function tries to guess the code that the player
     entered using the Worst-Case Strategy by Knuth (1976-1977)
-    It will always find the code, but sometimes might not be within 8 guesses.
+    It will always find the code, uses "AABB" method as initial guess.
     @param code: list
     @param colorlist: list
     @return: void
@@ -239,7 +275,7 @@ def useAlgorithm_WorstCase(code,colorlist):
         possiblesolutions = answers.copy()
         loop += 1
 
-    print(f"\nHet kostte het Worst-Case algoritme {loop} gokken!\n")
+    print(f"\nHet kostte het Worst-Case algoritme {loop} gok(ken)!\n")
 
 
 def useAlgorithm_Heuristiek(code,colorlist):
@@ -255,11 +291,10 @@ def useAlgorithm_Heuristiek(code,colorlist):
     possiblesolutions = possible.copy()
 
     guesses = [
-        ["R", "R", "R", "R"],
-        ["R", "R", "R", "G"],
-        ["R", "R", "G", "G"],
-        ["R", "G", "B", "O"],
-        ["R", "W", "Z", "R"]]
+        ["R", "B", "G", "O"],
+        ["Z", "R", "B", "G"],
+        ["W", "Z", "R", "B"],
+        ["O", "W", "Z", "R"]]
 
     pos = 0
     while pos != (len(guesses)):
@@ -268,7 +303,8 @@ def useAlgorithm_Heuristiek(code,colorlist):
         result = checkanswer(code, guess, colorlist)
         if result[1] == 4:
             print(f"\nFound it!\nThe code was: {guess}")
-            break
+            print(f"\nHet kostte mijn eigen heuristiek {pos+1} gok(ken)!")
+            return
         for i in possiblesolutions:
             comparison = checkanswer(guess, i, colorlist)
             if comparison[1] == result[1] and comparison[2] == result[2]:
@@ -276,12 +312,15 @@ def useAlgorithm_Heuristiek(code,colorlist):
         possiblesolutions = answers.copy()
         pos += 1
 
+    # ------ This makes sure unnecessary calculation is halted ------ #
     if len(answers) == 1 and answers[0] == code:
         print(f"\nFound it!\nThe code was: {answers[0]}")
-    elif answers[0] != code:
+        print(f"\nHet kostte mijn eigen heuristiek {pos} gok(ken)!")
+        return
+    # --------------------------------------------------------------- #
+    else:
         guess = random.choice(answers)
         while len(possiblesolutions) != 1:
-            answers = []
             result = checkanswer(code, guess, colorlist)
             if result[1] == 4:
                 print(f"\nFound it!\nThe code was: {guess}")
@@ -294,42 +333,7 @@ def useAlgorithm_Heuristiek(code,colorlist):
             possiblesolutions = answers.copy()
             pos += 1
 
-    print(f"\nHet kostte mijn eigen heuristiek {pos} gokken!")
-
-
-def playgame_VersusPlayer(colors):
-    """
-    This function runs the game where the player generates
-    the code and the computer needs to guess.
-    @param colors: list
-    @return: void
-    """
-    print(f"\nWelkom bij Mastermind!\n"
-          f"De computer zal jouw code raden door de voorletters te gebruiken van kleuren. (bijvoorbeeld: RGBZ)\n"
-          f"De code moet bestaan uit minimaal 4 kleuren die ieder: {colors} kunnen zijn.\n"
-          f"Let op: Je moet de kleuren als voorletters invoeren\n")
-
-    code = generate_PlayerCode(colors)
-    colorlist = []
-    for i in colors:
-        colorlist.append(i[0])
-
-    print(f"\n1. Simple Strategy (Shapiro, 1983)\n"
-          f"2. Worst Case Strategy (Knuth, 1976-1977)\n"
-          f"3. Eigen heuristiek (Justin Klein, 2021)")
-    while True:
-        algorithm = input("Kies een van de bovenstaande algoritmes: ")
-        if algorithm == "1":
-            resultaat = useAlgorithm_SimpleStrategy(code,colorlist)
-            break
-        elif algorithm == "2":
-            resultaat = useAlgorithm_WorstCase(code,colorlist)
-            break
-        elif algorithm == "3":
-            resultaat = useAlgorithm_Heuristiek(code,colorlist)
-            break
-        else:
-            print("\nVerkeerde invoer, Kies 1,2 of 3 en probeer het opnieuw!\n")
+    print(f"\nHet kostte mijn eigen heuristiek {pos} gok(ken)!")
 
 
 # ------------------------------------------------------------------------------------------- #
@@ -357,5 +361,8 @@ def Start_Mastermind(colors, length_code):
 # ----------------------------------------------------------------------------------------- #
 # -------------------------------------- Execution ---------------------------------------- #
 colors = ["Rood","Groen","Blauw","Oranje","Zwart","Wit"]
+
 length_code = 4
+# NOTE: Length_code applies only when the computer generates the code!
+
 Start_Mastermind(colors, length_code)
