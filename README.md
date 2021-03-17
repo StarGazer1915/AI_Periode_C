@@ -1,8 +1,8 @@
 # AI Periode C
 In dit repository worden alle opdrachten die ik maak in Periode C opgeslagen.
 
-# Mastermind
-Betreft bestanden: [Mastermind_Algoritmes_Pseudocode.py, Mastermind_Finished.py]
+# AR Opdrachten
+Bevat mijn gemaakte opdrachten (Summatief en Formatief) voor het vak Analytical Reasoning.
 
-Deze bestanden zijn gemaakt voor de mastermind opdracht van SP.
-De code maakt geen gebruik van math libraries.
+# SP Opdrachten
+Bevat mijn gemaakte opdrachten (Summatief en Formatief) voor het vak Structured Programming.
